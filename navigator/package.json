@@ -3,8 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
+    "firebase-tools": "^12.4.0",
     "html-webpack-plugin": "^5.5.3",
     "webpack": "^5.87.0",
     "webpack-dev-server": "^4.15.1"
+  },
+  "scripts": {
+    "dev": "webpack serve",
+    "build": "webpack",
+    "firebase": "firebase",
+    "preview": "firebase hosting:channel:deploy",
+    "deploy": "yarn build && firebase deploy --only hosting"
   }
 }
