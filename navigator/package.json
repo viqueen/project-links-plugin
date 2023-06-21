@@ -1,0 +1,10 @@
+{
+  "name": "project-links-navigator",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "html-webpack-plugin": "^5.5.3",
+    "webpack": "^5.87.0",
+    "webpack-dev-server": "^4.15.1"
+  }
+}
