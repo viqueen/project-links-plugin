@@ -1,0 +1,21 @@
+<idea-plugin>
+    <id>org.viqueen.ide.project-links-plugin</id>
+
+    <name>Project Links</name>
+
+    <vendor email="hasnae@viqueen.org" url="https://viqueen.org">@viqueen</vendor>
+
+    <description><![CDATA[
+    It detects Jira issues in comments and create a clickable hyperlink for easy navigation.
+  ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <psi.referenceContributor implementation="org.viqueen.ide.links.JiraLinksReferenceContributor" />
+    </extensions>
+</idea-plugin>
