@@ -4,7 +4,7 @@ Simple IDE plugin for detecting Jira issue links and turning them into a hyperli
 
 It allows to resolve
 - existing known Open Source Projects
-- your internal projects by providing a `.project-links.yml` configuration in your project root folder.
+- your internal projects by configuring them on your IDE.
 
 ## for-jetbrains
 

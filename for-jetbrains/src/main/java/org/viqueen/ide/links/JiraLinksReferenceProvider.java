@@ -22,10 +22,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.util.ProcessingContext;
+import org.apache.groovy.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,15 +40,17 @@ public class JiraLinksReferenceProvider extends PsiReferenceProvider {
     @Override
     public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
         if (element instanceof PsiComment) {
+            PsiComment comment = (PsiComment) element;
             JiraLinksAppSettingsState state = JiraLinksAppSettingsState.getInstance();
-            if (state.openSource) {
-                return this.handleOpenSource((PsiComment) element, context);
-            }
+            state.projectKeyToUrl.remove("");
+            WebReference[] fromOpenSource = state.openSource ? this.handleOpenSource(comment) : new WebReference[]{};
+            WebReference[] fromInternal = this.handleInternalProjects(comment, state.projectKeyToUrl);
+            return Arrays.concat(fromOpenSource, fromInternal);
         }
         return new PsiReference[0];
     }
 
-    private WebReference @NotNull[] handleOpenSource(@NotNull PsiComment comment, @NotNull ProcessingContext context) {
+    private WebReference @NotNull[] handleOpenSource(@NotNull PsiComment comment) {
         String text = comment.getText();
         Matcher matcher = openSourcePattern.matcher(text);
         List<WebReference> webReferences = new ArrayList<>();
@@ -56,6 +60,30 @@ public class JiraLinksReferenceProvider extends PsiReferenceProvider {
             int end = matcher.end("jiraIssue");
             TextRange range = new TextRange(start, end);
             webReferences.add(new WebReference(comment, range, format("https://project-links-navigator.web.app/#/jira/%s", jiraIssue)));
+        }
+        return webReferences.toArray(new WebReference[0]);
+    }
+
+    private WebReference @NotNull[] handleInternalProjects(@NotNull PsiComment comment, Map<String, String> projects) {
+        String projectsFilter = String.join("|", projects.keySet());
+        String regex = String.format("(?<jiraIssue>(?<jiraProject>%s)-(?<issueNumber>[0-9])+)", projectsFilter);
+        Pattern projectPattern = Pattern.compile(regex);
+
+        String text = comment.getText();
+        Matcher matcher = projectPattern.matcher(text);
+
+        List<WebReference> webReferences = new ArrayList<>();
+        while (matcher.find()) {
+            String jiraIssue = matcher.group("jiraIssue");
+            int start = matcher.start("jiraIssue");
+            int end = matcher.end("jiraIssue");
+            TextRange range = new TextRange(start, end);
+
+            String jiraProject = matcher.group("jiraProject");
+            String jiraProjectUrl = projects.get(jiraProject);
+            if (jiraProjectUrl != null) {
+                webReferences.add(new WebReference(comment, range, format("%s/browse/%s", jiraProjectUrl, jiraIssue)));
+            }
         }
         return webReferences.toArray(new WebReference[0]);
     }
