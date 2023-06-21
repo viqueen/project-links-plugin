@@ -31,7 +31,7 @@ public class JiraLinksReferenceProvider extends PsiReferenceProvider {
                 int start = matcher.start("jiraIssue");
                 int end = matcher.end("jiraIssue");
                 TextRange range = new TextRange(start, end);
-                webReferences.add(new WebReference(element, range, format("https://viqueen.github.io/project-links-navigator/#jira/%s",jiraIssue)));
+                webReferences.add(new WebReference(element, range, format("https://project-links-navigator.web.app/#/jira/%s",jiraIssue)));
             }
             return webReferences.toArray(new PsiReference[0]);
         }
