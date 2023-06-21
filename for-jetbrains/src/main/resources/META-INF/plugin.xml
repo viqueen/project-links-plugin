@@ -17,5 +17,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <psi.referenceContributor implementation="org.viqueen.ide.links.JiraLinksReferenceContributor" />
+        <applicationService serviceImplementation="org.viqueen.ide.links.JiraLinksAppSettingsState" />
+        <applicationConfigurable parentId="tools" instance="org.viqueen.ide.links.JiraLinksAppSettingsConfigurable" />
     </extensions>
 </idea-plugin>
