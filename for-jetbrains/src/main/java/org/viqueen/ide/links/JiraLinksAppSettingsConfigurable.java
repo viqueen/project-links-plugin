@@ -17,21 +17,22 @@ public class JiraLinksAppSettingsConfigurable implements Configurable {
     @Override
     public @Nullable JComponent createComponent() {
         JiraLinksAppSettingsState state = JiraLinksAppSettingsState.getInstance();
-        this.component = new JiraLinksAppSettingsComponent();
-        this.component.setOpenSource(state.openSource);
+        this.component = new JiraLinksAppSettingsComponent(state.openSource, state.projectKeyToUrl);
         return this.component.getMainPanel();
     }
 
     @Override
     public boolean isModified() {
         JiraLinksAppSettingsState state = JiraLinksAppSettingsState.getInstance();
-        return state.openSource != this.component.getOpenSource();
+        return state.openSource != this.component.getOpenSource()
+                || !state.projectKeyToUrl.equals(this.component.getProjectKeyToUrl());
     }
 
     @Override
     public void apply() throws ConfigurationException {
         JiraLinksAppSettingsState state = JiraLinksAppSettingsState.getInstance();
         state.openSource = this.component.getOpenSource();
+        state.projectKeyToUrl = this.component.getProjectKeyToUrl();
     }
 
     @Override

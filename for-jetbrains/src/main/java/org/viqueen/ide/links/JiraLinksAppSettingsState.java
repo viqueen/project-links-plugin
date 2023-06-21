@@ -8,6 +8,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @State(
         name = "org.viqueen.ide.links.JiraLinksAppSettingsState",
         storages = @Storage("JiraLinksSettings.xml")
@@ -15,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class JiraLinksAppSettingsState implements PersistentStateComponent<JiraLinksAppSettingsState> {
 
     public boolean openSource = true;
+    public Map<String, String> projectKeyToUrl = new HashMap<>();
 
     @Override
     public @Nullable JiraLinksAppSettingsState getState() {
