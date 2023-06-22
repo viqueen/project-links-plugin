@@ -1,11 +1,8 @@
-name: Build project-links-plugin for-jetbrains
+name: Release project-links-plugin for-jetbrains
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+  release:
+    types: [created]
 
 jobs:
   build-for-jetbrains:
