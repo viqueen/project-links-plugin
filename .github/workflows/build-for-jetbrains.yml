@@ -16,5 +16,5 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-      - uses: gradle/gradle-build-action@v3
+      - uses: gradle/gradle-build-action@v2
       - run: cd for-jetbrains && ./gradlew build
