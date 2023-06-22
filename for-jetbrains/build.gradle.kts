@@ -4,7 +4,6 @@ plugins {
 }
 
 group = "org.viqueen.ide"
-version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -32,8 +31,8 @@ tasks {
     }
 
     signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
+        certificateChain.set(System.getenv("CERTIFICATE_CHAIN").trimIndent())
+        privateKey.set(System.getenv("PRIVATE_KEY").trimIndent())
         password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
     }
 

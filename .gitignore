@@ -111,3 +111,7 @@ node_modules/
 
 node_modules/
 dist/
+
+private_encrypted.pem
+private.pem
+chain.crt
