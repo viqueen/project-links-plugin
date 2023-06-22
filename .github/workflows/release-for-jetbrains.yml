@@ -17,7 +17,14 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
       - uses: gradle/gradle-build-action@v2
-      - run: cd for-jetbrains && ./release.sh
+
+      - name: build and release
+        env:
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: cd for-jetbrains && ./release.sh
+
       - name: commit and push new snapshot version
         env:
           CI_COMMIT_MESSAGE: new snapshot version for-jetbrains
@@ -28,6 +35,7 @@ jobs:
           git add for-jetbrains/gradle.properties
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
+
       - uses: actions/upload-artifact@v3
         with:
           name: plugin artifacts
