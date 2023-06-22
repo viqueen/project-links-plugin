@@ -22,12 +22,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.util.ProcessingContext;
-import org.apache.groovy.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,54 +33,43 @@ import static java.lang.String.format;
 
 public class JiraLinksReferenceProvider extends PsiReferenceProvider {
 
-    private static final Pattern openSourcePattern = Pattern.compile("(?<jiraIssue>[a-zA-Z]+-[0-9]+)");
+    private static final Pattern issuePattern = Pattern.compile("(?<jiraIssue>(?<jiraProject>[a-zA-Z]+)-[0-9]+)");
 
     @Override
     public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
         if (element instanceof PsiComment) {
             PsiComment comment = (PsiComment) element;
-            JiraLinksAppSettingsState state = JiraLinksAppSettingsState.getInstance();
-            state.projectKeyToUrl.remove("");
-            WebReference[] fromOpenSource = state.openSource ? this.handleOpenSource(comment) : new WebReference[]{};
-            WebReference[] fromInternal = this.handleInternalProjects(comment, state.projectKeyToUrl);
-            return Arrays.concat(fromOpenSource, fromInternal);
+            return handleComment(comment);
         }
         return new PsiReference[0];
     }
 
-    private WebReference @NotNull[] handleOpenSource(@NotNull PsiComment comment) {
-        String text = comment.getText();
-        Matcher matcher = openSourcePattern.matcher(text);
-        List<WebReference> webReferences = new ArrayList<>();
-        while (matcher.find()) {
-            String jiraIssue = matcher.group("jiraIssue");
-            int start = matcher.start("jiraIssue");
-            int end = matcher.end("jiraIssue");
-            TextRange range = new TextRange(start, end);
-            webReferences.add(new WebReference(comment, range, format("https://project-links-navigator.web.app/#/jira/%s", jiraIssue)));
+    private WebReference @NotNull[] handleComment(@NotNull PsiComment comment) {
+        JiraLinksAppSettingsState state = JiraLinksAppSettingsState.getInstance();
+        state.projectKeyToUrl.remove("");
+        // early exit
+        if (!state.openSource && state.projectKeyToUrl.isEmpty()) {
+            return new WebReference[0];
         }
-        return webReferences.toArray(new WebReference[0]);
-    }
-
-    private WebReference @NotNull[] handleInternalProjects(@NotNull PsiComment comment, Map<String, String> projects) {
-        String projectsFilter = String.join("|", projects.keySet());
-        String regex = String.format("(?<jiraIssue>(?<jiraProject>%s)-(?<issueNumber>[0-9])+)", projectsFilter);
-        Pattern projectPattern = Pattern.compile(regex);
 
         String text = comment.getText();
-        Matcher matcher = projectPattern.matcher(text);
-
+        Matcher matcher = issuePattern.matcher(text);
         List<WebReference> webReferences = new ArrayList<>();
         while (matcher.find()) {
             String jiraIssue = matcher.group("jiraIssue");
             int start = matcher.start("jiraIssue");
             int end = matcher.end("jiraIssue");
             TextRange range = new TextRange(start, end);
+
 
             String jiraProject = matcher.group("jiraProject");
-            String jiraProjectUrl = projects.get(jiraProject);
+            String jiraProjectUrl = state.projectKeyToUrl.get(jiraProject);
+
+            // prioritise project from config then fallback to open-source projects if enabled
             if (jiraProjectUrl != null) {
                 webReferences.add(new WebReference(comment, range, format("%s/browse/%s", jiraProjectUrl, jiraIssue)));
+            } else if (state.openSource) {
+                webReferences.add(new WebReference(comment, range, format("https://project-links-navigator.web.app/#/jira/%s", jiraIssue)));
             }
         }
         return webReferences.toArray(new WebReference[0]);
