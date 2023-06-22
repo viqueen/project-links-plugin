@@ -1,0 +1,20 @@
+name: Build project-links-plugin for-jetbrains
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build-for-jetbrains:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      - uses: gradle/gradle-build-action@v3
+      - run: cd for-jetbrains && ./gradlew build
