@@ -27,6 +27,7 @@ _execute() {
   ./gradlew -Pversion="${release_version}" "${command}"
 }
 
+set -ex
 _execute build
 _execute buildPlugin
 _execute publishPlugin
