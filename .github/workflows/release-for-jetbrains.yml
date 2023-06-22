@@ -30,6 +30,7 @@ jobs:
         run: |
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "viqueen@users.noreply.github.com"
+          git checkout main
           git add for-jetbrains/gradle.properties
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
