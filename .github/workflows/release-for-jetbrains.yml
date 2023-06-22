@@ -13,8 +13,8 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-      - uses: gradle/gradle-build-action@v2
 
+      - uses: gradle/gradle-build-action@v2.4.2
       - name: build and release
         env:
           CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
